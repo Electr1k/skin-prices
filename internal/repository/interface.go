@@ -1,7 +1,7 @@
 package repository
 
-import "awesomeProject/internal/models"
+import "awesomeProject/internal/domain"
 
 type PriceRepository interface {
-	GetPrices() ([]models.Price, error)
+	GetPrices() ([]domain.Price, error)
 }

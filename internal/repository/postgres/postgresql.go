@@ -18,7 +18,6 @@ func New(ctx context.Context, connectionString string) (*Postgres, error) {
 		return nil, err
 	}
 
-	// Test connection
 	if err := pool.Ping(ctx); err != nil {
 		return nil, err
 	}

@@ -1,13 +1,13 @@
 package postgres
 
 import (
-	"awesomeProject/internal/models"
+	"awesomeProject/internal/domain"
 	"context"
 	"database/sql"
 	"fmt"
 )
 
-func (p *Postgres) GetPrices() ([]models.Price, error) {
+func (p *Postgres) GetPrices() ([]domain.Price, error) {
 	rows, err := p.pool.Query(context.Background(), `
 		SELECT name, last_24h, last_7d, last_30d, last_90d
 		FROM prices;
@@ -17,7 +17,7 @@ func (p *Postgres) GetPrices() ([]models.Price, error) {
 	}
 	defer rows.Close()
 
-	var prices []models.Price
+	var prices []domain.Price
 	var count int
 
 	for rows.Next() {
@@ -36,7 +36,7 @@ func (p *Postgres) GetPrices() ([]models.Price, error) {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		price, err := models.NewPrice(
+		price, err := domain.NewPrice(
 			name,
 			nullFloatToFloat32Ptr(last24h),
 			nullFloatToFloat32Ptr(last7d),
@@ -44,7 +44,7 @@ func (p *Postgres) GetPrices() ([]models.Price, error) {
 			nullFloatToFloat32Ptr(last90d),
 		)
 		if err != nil {
-			fmt.Printf("Failed to create price models for %s: %v\n", name, err)
+			fmt.Printf("Failed to create price domain for %s: %v\n", name, err)
 			continue
 		}
 
@@ -56,7 +56,6 @@ func (p *Postgres) GetPrices() ([]models.Price, error) {
 		return nil, fmt.Errorf("rows error: %w", err)
 	}
 
-	fmt.Printf("Successfully processed %d price records\n", count)
 	return prices, nil
 }
 

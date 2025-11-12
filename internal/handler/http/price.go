@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"awesomeProject/internal/usecase/price"

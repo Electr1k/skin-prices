@@ -1,7 +1,7 @@
 package price
 
 import (
-	"awesomeProject/internal/models"
+	"awesomeProject/internal/domain"
 	"awesomeProject/internal/repository"
 )
 
@@ -15,6 +15,6 @@ func NewGetPricesUseCase(priceRepo repository.PriceRepository) *GetPricesUseCase
 	}
 }
 
-func (uc *GetPricesUseCase) Handle() ([]models.Price, error) {
+func (uc *GetPricesUseCase) Handle() ([]domain.Price, error) {
 	return uc.priceRepo.GetPrices()
 }

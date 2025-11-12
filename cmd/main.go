@@ -2,7 +2,7 @@ package main
 
 import (
 	"awesomeProject/config"
-	"awesomeProject/internal/handler"
+	http2 "awesomeProject/internal/handler/http"
 	"awesomeProject/internal/repository/postgres"
 	"awesomeProject/internal/usecase/price"
 	"context"
@@ -31,9 +31,9 @@ func run(ctx context.Context, cfg *config.Config) error {
 
 	priceUseCase := price.NewGetPricesUseCase(repo)
 
-	priceHandler := handler.NewPriceHandler(priceUseCase)
+	priceHandler := http2.NewPriceHandler(priceUseCase)
 
-	router := handler.NewRouter(priceHandler)
+	router := http2.NewRouter(priceHandler)
 
 	server := &http.Server{
 		Addr:         cfg.HttpServer.Address,

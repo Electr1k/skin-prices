@@ -1,18 +1,19 @@
-package models
+package domain
 
 import "github.com/go-playground/validator/v10"
 
 type SkinName string
+
 type Dollar float32
 
 var validate = validator.New(validator.WithRequiredStructEnabled())
 
 type Price struct {
 	Name    SkinName `json:"name" validate:"required"`
-	Last24h *Dollar  `json:"last_24h,omitempty" validate:"omitempty,min=0"`
-	Last7d  *Dollar  `json:"last_7d,omitempty" validate:"omitempty,min=0"`
-	Last30d *Dollar  `json:"last_30d,omitempty" validate:"omitempty,min=0"`
-	Last90d *Dollar  `json:"last_90d,omitempty" validate:"omitempty,min=0"`
+	Last24h *Dollar  `json:"last_24h" validate:"omitempty,min=0"`
+	Last7d  *Dollar  `json:"last_7d" validate:"omitempty,min=0"`
+	Last30d *Dollar  `json:"last_30d" validate:"omitempty,min=0"`
+	Last90d *Dollar  `json:"last_90d" validate:"omitempty,min=0"`
 }
 
 func NewPrice(
