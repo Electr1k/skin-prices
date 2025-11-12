@@ -1,0 +1,33 @@
+package postgres
+
+import (
+	"context"
+	"sync"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+)
+
+type Postgres struct {
+	mu   sync.Mutex
+	pool *pgxpool.Pool
+}
+
+func New(ctx context.Context, connectionString string) (*Postgres, error) {
+	pool, err := pgxpool.Connect(ctx, connectionString)
+	if err != nil {
+		return nil, err
+	}
+
+	// Test connection
+	if err := pool.Ping(ctx); err != nil {
+		return nil, err
+	}
+
+	return &Postgres{pool: pool}, nil
+}
+
+func (p *Postgres) Close() {
+	if p.pool != nil {
+		p.pool.Close()
+	}
+}
