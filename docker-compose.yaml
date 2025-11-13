@@ -1,0 +1,25 @@
+services:
+  server:
+    build: .
+    ports:
+      - ${HTTP_FORWARD_PORT}:${HTTP_PORT}
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-postgres}@postgres:5432/${DATABASE_DATABASE:-postgres}?sslmode=disable
+    depends_on:
+      - postgres
+    env_file: .env
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - ${DATABASE_PORT:-5555}:5432
+    environment:
+      - POSTGRES_USER=${DATABASE_USER:-postgres}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-postgres1}
+      - POSTGRES_DB=${DATABASE_DATABASE:-postgres}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

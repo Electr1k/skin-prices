@@ -35,8 +35,9 @@ func run(ctx context.Context, cfg *config.Config) error {
 
 	router := http2.NewRouter(priceHandler)
 
+	fmt.Println(cfg.HttpServer.Address + ":" + cfg.HttpServer.Port)
 	server := &http.Server{
-		Addr:         cfg.HttpServer.Address,
+		Addr:         ":" + cfg.HttpServer.Port,
 		Handler:      router,
 		ReadTimeout:  cfg.HttpServer.Timeout,
 		WriteTimeout: cfg.HttpServer.Timeout,

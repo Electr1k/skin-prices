@@ -16,9 +16,10 @@ type Config struct {
 }
 
 type HttpServer struct {
-	Address     string        `env:"address" env-default:"localhost:8080"`
-	Timeout     time.Duration `env:"timeout" env-default:"5s"`
-	IdleTimeout time.Duration `env:"timeout" env-default:"60s"`
+	Address     string        `env:"ADDRESS" env-default:""`
+	Port        string        `env:"PORT" env-default:"8080"`
+	Timeout     time.Duration `env:"TIMEOUT" env-default:"5s"`
+	IdleTimeout time.Duration `env:"IDLE_TIMEOUT" env-default:"60s"`
 }
 
 func MustLoad() *Config {

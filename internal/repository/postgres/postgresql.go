@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"awesomeProject/pkg/migrations"
 	"context"
 	"sync"
 
@@ -19,6 +20,10 @@ func New(ctx context.Context, connectionString string) (*Postgres, error) {
 	}
 
 	if err := pool.Ping(ctx); err != nil {
+		return nil, err
+	}
+
+	if err := migrations.RunMigrations(ctx, pool, "postgres"); err != nil {
 		return nil, err
 	}
 
