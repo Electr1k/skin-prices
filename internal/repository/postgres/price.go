@@ -12,13 +12,14 @@ func (p *Postgres) GetPrices() ([]domain.Price, error) {
 		SELECT name, last_24h, last_7d, last_30d, last_90d
 		FROM prices;
 	`)
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to query prices: %w", err)
+		return nil, err
 	}
+
 	defer rows.Close()
 
 	var prices []domain.Price
-	var count int
 
 	for rows.Next() {
 		var (
@@ -44,16 +45,14 @@ func (p *Postgres) GetPrices() ([]domain.Price, error) {
 			nullFloatToFloat32Ptr(last90d),
 		)
 		if err != nil {
-			fmt.Printf("Failed to create price domain for %s: %v\n", name, err)
-			continue
+			return nil, err
 		}
 
 		prices = append(prices, *price)
-		count++
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows error: %w", err)
+		return nil, err
 	}
 
 	return prices, nil
