@@ -35,7 +35,7 @@ func (s *Scheduler) Stop() {
 func RegisterSchedule(fetchPriceTask *FetchPriceTask) (*Scheduler, error) {
 	scheduler := NewScheduler()
 
-	err := scheduler.Register("* * * * *", fetchPriceTask)
+	err := scheduler.Register("0 4 * * *", fetchPriceTask)
 	if err != nil {
 		return nil, err
 	}
