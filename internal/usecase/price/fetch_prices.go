@@ -11,7 +11,10 @@ type FetchPricesUseCase struct {
 	repository repository.PriceRepository
 }
 
-func NewFetchPricesUseCase(httpClient steam_data.PriceProvider, repository repository.PriceRepository) *FetchPricesUseCase {
+func NewFetchPricesUseCase(
+	httpClient steam_data.PriceProvider,
+	repository repository.PriceRepository,
+) *FetchPricesUseCase {
 	return &FetchPricesUseCase{
 		httpClient: httpClient,
 		repository: repository,
@@ -38,15 +41,11 @@ func (uc *FetchPricesUseCase) Handle() ([]*domain.Price, error) {
 		)
 
 		if err != nil {
-			panic(err)
-
 			return nil, err
 		}
 
 		model, err := uc.repository.UpdateOrCreate(price)
 		if err != nil {
-			panic(err)
-
 			return nil, err
 		}
 

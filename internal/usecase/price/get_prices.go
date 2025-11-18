@@ -6,15 +6,17 @@ import (
 )
 
 type GetPricesUseCase struct {
-	priceRepo repository.PriceRepository
+	priceRepository repository.PriceRepository
 }
 
-func NewGetPricesUseCase(priceRepo repository.PriceRepository) *GetPricesUseCase {
+func NewGetPricesUseCase(
+	priceRepository repository.PriceRepository,
+) *GetPricesUseCase {
 	return &GetPricesUseCase{
-		priceRepo: priceRepo,
+		priceRepository: priceRepository,
 	}
 }
 
 func (uc *GetPricesUseCase) Handle() ([]*domain.Price, error) {
-	return uc.priceRepo.GetPrices()
+	return uc.priceRepository.GetPrices()
 }

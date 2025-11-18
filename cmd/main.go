@@ -2,45 +2,59 @@ package main
 
 import (
 	"awesomeProject/config"
-	http2 "awesomeProject/internal/handler/http"
+	"awesomeProject/internal/handler/cron"
+	"awesomeProject/internal/handler/http"
 	"awesomeProject/internal/repository/postgres"
 	"awesomeProject/internal/usecase/price"
 	"awesomeProject/pkg/steam_data/lunex"
 	"context"
-	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+	httpServer "net/http"
+)
+
+var (
+	// Repositories
+	postgreSQL *postgres.Postgres
+
+	// Services
+	lunexHTTPClient *lunex.HttpClient
+
+	// Usecases
+	getPriceUseCase   *price.GetPricesUseCase
+	fetchPriceUseCase *price.FetchPricesUseCase
+
+	// Handlers
+	priceHandler   *http.PriceHandler
+	fetchPriceTask *cron.FetchPriceTask
 )
 
 func main() {
 	cfg := config.MustLoad()
 
-	if err := run(context.Background(), cfg); err != nil {
+	ctx := context.Background()
+
+	if err := createRepositories(ctx, cfg); err != nil {
 		panic(err)
 	}
+	defer postgreSQL.Close()
+
+	createServices()
+	createUseCases()
+	createHandlers()
+
+	if err := run(cfg); err != nil {
+		panic(err)
+	}
+
 }
 
-func run(ctx context.Context, cfg *config.Config) error {
-	repo, err := postgres.New(ctx, cfg.DatabaseURL)
-	if err != nil {
-		return fmt.Errorf("failed to create repository: %w", err)
+func run(cfg *config.Config) error {
+	if _, err := cron.RegisterSchedule(fetchPriceTask); err != nil {
+		return err
 	}
-	defer repo.Close()
 
-	steamDataService := lunex.NewClient()
+	router := http.NewRouter(priceHandler)
 
-	getPriceUseCase := price.NewGetPricesUseCase(repo)
-	fetchPriceUseCase := price.NewFetchPricesUseCase(&steamDataService, repo)
-
-	priceHandler := http2.NewPriceHandler(getPriceUseCase, fetchPriceUseCase)
-
-	router := http2.NewRouter(priceHandler)
-
-	fmt.Println(cfg.HttpServer.Address + ":" + cfg.HttpServer.Port)
-	server := &http.Server{
+	server := &httpServer.Server{
 		Addr:         ":" + cfg.HttpServer.Port,
 		Handler:      router,
 		ReadTimeout:  cfg.HttpServer.Timeout,
@@ -48,26 +62,36 @@ func run(ctx context.Context, cfg *config.Config) error {
 		IdleTimeout:  cfg.HttpServer.IdleTimeout,
 	}
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		fmt.Printf("Server starting on %s\n", cfg.HttpServer.Address)
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Printf("Failed to start server: %v\n", err)
-		}
-	}()
-
-	<-done
-	fmt.Println("Shutting down server...")
-
-	shutdownCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(shutdownCtx); err != nil {
-		return fmt.Errorf("failed to shutdown server: %w", err)
+	if err := server.ListenAndServe(); err != nil {
+		return err
 	}
 
-	fmt.Println("Server stopped")
 	return nil
+}
+
+func createRepositories(ctx context.Context, cfg *config.Config) error {
+	var err error
+	postgreSQL, err = postgres.New(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createServices() {
+	lunexHTTPClient = lunex.NewClient()
+}
+
+func createUseCases() {
+	getPriceUseCase = price.NewGetPricesUseCase(postgreSQL)
+	fetchPriceUseCase = price.NewFetchPricesUseCase(lunexHTTPClient, postgreSQL)
+}
+
+func createHandlers() {
+	// HTTP handlers
+	priceHandler = http.NewPriceHandler(getPriceUseCase, fetchPriceUseCase)
+
+	// Cron commands
+	fetchPriceTask = cron.NewFetchPriceTask(fetchPriceUseCase)
 }

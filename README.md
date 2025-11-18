@@ -1,1 +1,36 @@
 # skin-prices
+
+cmd:
+    main.go
+config:
+    config.go
+inernal:
+    domain:
+        price.go
+handler:
+    cron:
+        fetch_price.go
+        schedule.go
+    http:
+        price.go
+        router.go
+repository:
+    postgres:
+        postgresql.go
+        price.go
+    interface.go
+usecase:
+    price:
+        fetch_prices.go
+        get_prices.go
+migrations:
+    *.sql
+pgk:
+    migrations:
+        migrator.go
+    steam_data:
+        dtos:
+            price.go
+        lunex:
+            http_client.go
+            interface.go

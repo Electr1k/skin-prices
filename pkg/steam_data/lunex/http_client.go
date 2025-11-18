@@ -15,8 +15,8 @@ type HttpClient struct {
 	client  *http.Client
 }
 
-func NewClient() HttpClient {
-	return HttpClient{
+func NewClient() *HttpClient {
+	return &HttpClient{
 		baseURL: "https://raw.githubusercontent.com/LukeX404/",
 		client:  &http.Client{Timeout: 60 * time.Second},
 	}
