@@ -15,7 +15,6 @@ func NewRouter(priceHandler *PriceHandler) http.Handler {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/prices", priceHandler.GetPrices)
-		r.Get("/f", priceHandler.FetchPrices)
 	})
 
 	return r
