@@ -1,9 +1,9 @@
 package price
 
 import (
-	"awesomeProject/internal/domain"
-	"awesomeProject/internal/repository"
-	"awesomeProject/pkg/steam_data"
+	"skin-prices/internal/domain"
+	"skin-prices/internal/repository"
+	"skin-prices/pkg/steam_data"
 )
 
 type FetchPricesUseCase struct {

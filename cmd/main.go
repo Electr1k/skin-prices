@@ -1,14 +1,14 @@
 package main
 
 import (
-	"awesomeProject/config"
-	"awesomeProject/internal/handler/cron"
-	"awesomeProject/internal/handler/http"
-	"awesomeProject/internal/repository/postgres"
-	"awesomeProject/internal/usecase/price"
-	"awesomeProject/pkg/steam_data/lunex"
 	"context"
 	httpServer "net/http"
+	"skin-prices/config"
+	"skin-prices/internal/handler/cron"
+	"skin-prices/internal/handler/http"
+	"skin-prices/internal/repository/postgres"
+	"skin-prices/internal/usecase/price"
+	"skin-prices/pkg/steam_data/lunex"
 )
 
 var (

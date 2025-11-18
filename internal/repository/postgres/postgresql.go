@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	"awesomeProject/pkg/migrations"
 	"context"
 	"database/sql"
+	"skin-prices/pkg/migrations"
 	"sync"
 
 	"github.com/jackc/pgx/v4/pgxpool"

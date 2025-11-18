@@ -1,9 +1,9 @@
 package http
 
 import (
-	"awesomeProject/internal/usecase/price"
 	"encoding/json"
 	"net/http"
+	"skin-prices/internal/usecase/price"
 )
 
 type PriceHandler struct {

@@ -1,8 +1,8 @@
 package cron
 
 import (
-	"awesomeProject/internal/usecase/price"
 	"log"
+	"skin-prices/internal/usecase/price"
 	"strconv"
 )
 

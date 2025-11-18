@@ -1,12 +1,12 @@
 package lunex
 
 import (
-	"awesomeProject/pkg/steam_data/dtos"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"skin-prices/pkg/steam_data/dtos"
 	"time"
 )
 

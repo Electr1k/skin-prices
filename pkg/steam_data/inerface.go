@@ -1,7 +1,7 @@
 package steam_data
 
 import (
-	"awesomeProject/pkg/steam_data/dtos"
+	"skin-prices/pkg/steam_data/dtos"
 )
 
 type PriceProvider interface {

@@ -1,10 +1,10 @@
 package postgres
 
 import (
-	"awesomeProject/internal/domain"
 	"context"
 	"database/sql"
 	"fmt"
+	"skin-prices/internal/domain"
 )
 
 func (p *Postgres) GetPrices() ([]*domain.Price, error) {

@@ -1,8 +1,8 @@
 package price
 
 import (
-	"awesomeProject/internal/domain"
-	"awesomeProject/internal/repository"
+	"skin-prices/internal/domain"
+	"skin-prices/internal/repository"
 )
 
 type GetPricesUseCase struct {
