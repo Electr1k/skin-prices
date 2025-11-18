@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (p *Postgres) GetPrices() ([]domain.Price, error) {
+func (p *Postgres) GetPrices() ([]*domain.Price, error) {
 	rows, err := p.pool.Query(context.Background(), `
 		SELECT name, last_24h, last_7d, last_30d, last_90d
 		FROM prices;
@@ -19,7 +19,7 @@ func (p *Postgres) GetPrices() ([]domain.Price, error) {
 
 	defer rows.Close()
 
-	var prices []domain.Price
+	var prices []*domain.Price
 
 	for rows.Next() {
 		var (
@@ -48,7 +48,7 @@ func (p *Postgres) GetPrices() ([]domain.Price, error) {
 			return nil, err
 		}
 
-		prices = append(prices, *price)
+		prices = append(prices, price)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -58,10 +58,47 @@ func (p *Postgres) GetPrices() ([]domain.Price, error) {
 	return prices, nil
 }
 
-func nullFloatToFloat32Ptr(n sql.NullFloat64) *float32 {
-	if n.Valid {
-		val := float32(n.Float64)
-		return &val
+func (p *Postgres) UpdateOrCreate(price *domain.Price) (*domain.Price, error) {
+
+	row := p.pool.QueryRow(context.Background(),
+		`
+			INSERT INTO prices (name, last_24h, last_7d, last_30d, last_90d) 
+			VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT (name) 
+			DO UPDATE SET 
+				last_24h = EXCLUDED.last_24h,
+				last_7d = EXCLUDED.last_7d,
+				last_30d = EXCLUDED.last_30d,
+				last_90d = EXCLUDED.last_90d
+			RETURNING name, last_24h, last_7d, last_30d, last_90d
+		`, price.Name, price.Last24h, price.Last7d, price.Last30d, price.Last90d)
+
+	var (
+		name                              string
+		last24h, last7d, last30d, last90d sql.NullFloat64
+	)
+
+	if err := row.Scan(
+		&name,
+		&last24h,
+		&last7d,
+		&last30d,
+		&last90d,
+	); err != nil {
+		return nil, err
 	}
-	return nil
+
+	dto, err := domain.NewPrice(
+		name,
+		nullFloatToFloat32Ptr(last24h),
+		nullFloatToFloat32Ptr(last7d),
+		nullFloatToFloat32Ptr(last30d),
+		nullFloatToFloat32Ptr(last90d),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dto, nil
 }

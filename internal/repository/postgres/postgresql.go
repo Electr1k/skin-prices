@@ -3,6 +3,7 @@ package postgres
 import (
 	"awesomeProject/pkg/migrations"
 	"context"
+	"database/sql"
 	"sync"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -34,4 +35,12 @@ func (p *Postgres) Close() {
 	if p.pool != nil {
 		p.pool.Close()
 	}
+}
+
+func nullFloatToFloat32Ptr(n sql.NullFloat64) *float32 {
+	if n.Valid {
+		val := float32(n.Float64)
+		return &val
+	}
+	return nil
 }

@@ -15,6 +15,6 @@ func NewGetPricesUseCase(priceRepo repository.PriceRepository) *GetPricesUseCase
 	}
 }
 
-func (uc *GetPricesUseCase) Handle() ([]domain.Price, error) {
+func (uc *GetPricesUseCase) Handle() ([]*domain.Price, error) {
 	return uc.priceRepo.GetPrices()
 }

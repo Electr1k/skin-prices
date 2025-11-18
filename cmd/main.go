@@ -5,6 +5,7 @@ import (
 	http2 "awesomeProject/internal/handler/http"
 	"awesomeProject/internal/repository/postgres"
 	"awesomeProject/internal/usecase/price"
+	"awesomeProject/pkg/steam_data/lunex"
 	"context"
 	"fmt"
 	"net/http"
@@ -29,9 +30,12 @@ func run(ctx context.Context, cfg *config.Config) error {
 	}
 	defer repo.Close()
 
-	priceUseCase := price.NewGetPricesUseCase(repo)
+	steamDataService := lunex.NewClient()
 
-	priceHandler := http2.NewPriceHandler(priceUseCase)
+	getPriceUseCase := price.NewGetPricesUseCase(repo)
+	fetchPriceUseCase := price.NewFetchPricesUseCase(&steamDataService, repo)
+
+	priceHandler := http2.NewPriceHandler(getPriceUseCase, fetchPriceUseCase)
 
 	router := http2.NewRouter(priceHandler)
 
