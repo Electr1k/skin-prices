@@ -1,4 +1,4 @@
-package domain
+package dto
 
 import (
 	"time"
@@ -10,11 +10,11 @@ type SkinName string
 
 type Dollar float32
 
-type Date time.Time
+type Date string
 
 var validate = validator.New(validator.WithRequiredStructEnabled())
 
-type Price struct {
+type PriceResponse struct {
 	Name    SkinName `json:"name" validate:"required"`
 	Date    Date     `json:"date" validate:"required"`
 	Last24h *Dollar  `json:"last_24h" validate:"omitempty,min=0"`
@@ -23,17 +23,17 @@ type Price struct {
 	Last90d *Dollar  `json:"last_90d" validate:"omitempty,min=0"`
 }
 
-func NewPrice(
+func NewPriceResponse(
 	name string,
 	date time.Time,
 	last24h *float32,
 	last7d *float32,
 	last30d *float32,
 	last90d *float32,
-) (*Price, error) {
-	p := &Price{
+) (*PriceResponse, error) {
+	p := &PriceResponse{
 		Name: SkinName(name),
-		Date: Date(date),
+		Date: Date(date.Format("2006-01-02")),
 	}
 
 	if last24h != nil {
@@ -60,6 +60,6 @@ func NewPrice(
 	return p, nil
 }
 
-func (p *Price) Validate() error {
+func (p *PriceResponse) Validate() error {
 	return validate.Struct(p)
 }

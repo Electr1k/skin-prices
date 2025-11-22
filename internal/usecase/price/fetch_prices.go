@@ -4,6 +4,7 @@ import (
 	"skin-prices/internal/domain"
 	"skin-prices/internal/repository"
 	"skin-prices/pkg/steam_data"
+	"time"
 )
 
 type FetchPricesUseCase struct {
@@ -34,6 +35,7 @@ func (uc *FetchPricesUseCase) Handle() ([]*domain.Price, error) {
 
 		price, err := domain.NewPrice(
 			skinName,
+			time.Now(),
 			&dto.Steam.Last24h,
 			&dto.Steam.Last7d,
 			&dto.Steam.Last30d,
